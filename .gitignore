@@ -1,0 +1,4 @@
+# Ignore environment variables file
+.env
+.DS_Store
+__pycache__
