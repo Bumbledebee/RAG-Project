@@ -6,6 +6,8 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.schema import Document
 from langchain_community.vectorstores import Chroma
 import openai
+import sqlite3
+import sys
 import chromadb
 import utils
 # --- Streamlit UI Configuration ---
@@ -24,8 +26,8 @@ db = checking_database()
 
 # --- Load API keys ---
 load_dotenv()
-api_key = os.getenv("OPENAI_API_KEY")
-#api_key = st.secrets["OPENAI_API_KEY"]
+#api_key = os.getenv("OPENAI_API_KEY")
+api_key = st.secrets["OPENAI_API_KEY"]
 openai.api_key = api_key
 
 
