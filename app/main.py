@@ -8,15 +8,27 @@ from langchain_community.vectorstores import Chroma
 import openai
 import chromadb
 import utils
+# --- Streamlit UI Configuration ---
+st.set_page_config(page_title="Test Your Statistics Knowledge", page_icon="📊", layout="wide")
+
+@st.cache_resource
+def checking_database():
+    """Loads the PDF, splits it into chunks, and creates vector embeddings."""
+    pdf_content = utils.load_pdf("./data/Introduction to Statistics.pdf")
+    cleaned_content = utils.clean_pdf(pdf_content)
+    documents = [Document(page_content=text) for text in cleaned_content]
+    embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
+    db = Chroma.from_documents(documents, embeddings, persist_directory="./chroma_db")
+    return db
+db = checking_database()
 
 # --- Load API keys ---
 load_dotenv()
-#api_key = os.getenv("OPENAI_API_KEY")
-api_key = st.secrets["OPENAI_API_KEY"]
+api_key = os.getenv("OPENAI_API_KEY")
+#api_key = st.secrets["OPENAI_API_KEY"]
 openai.api_key = api_key
 
-# --- Streamlit UI Configuration ---
-st.set_page_config(page_title="Test Your Statistics Knowledge", page_icon="📊", layout="wide")
+
 
 # --- Initialize Session State for Responses ---
 if "answer" not in st.session_state:
@@ -39,22 +51,7 @@ with col2:
         start_time = time.time()
 
         with st.spinner("The answer is being prepared..."):
-            document_dir = "./"
-            pdf_file = "data/Introduction to Statistics.pdf"
 
-            @st.cache_resource
-            def checking_database():
-                """Loads the PDF, splits it into chunks, and creates vector embeddings."""
-                file_path = os.path.join(document_dir, pdf_file)
-                pdf_content = utils.load_pdf(file_path)
-                cleaned_content = utils.clean_pdf(pdf_content)
-                documents = [Document(page_content=text) for text in cleaned_content]
-                embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
-                client = chromadb.PersistentClient(path="./chroma_db")
-                db = Chroma.from_documents(documents, embeddings, persist_directory="./chroma_db", client=client)
-                return db
-
-            db = checking_database()
             retrieved_docs = db.similarity_search(user_question, k=10)
 
             if retrieved_docs:
@@ -79,6 +76,7 @@ with col2:
 
             ## RESPONSE FORMAT
             **Answer:** [Concise response]
+            If the answer contains a mathematical formula display it in Latex format.
 
             **Key Points:**
             - Bullet point 1
