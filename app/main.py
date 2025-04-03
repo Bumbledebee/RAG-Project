@@ -11,8 +11,8 @@ import utils
 
 # --- Load API keys ---
 load_dotenv()
-#api_key = os.getenv("OPENAI_API_KEY")
-api_key = st.secrets["OPENAI_API_KEY"]
+api_key = os.getenv("OPENAI_API_KEY")
+#api_key = st.secrets["OPENAI_API_KEY"]
 openai.api_key = api_key
 
 # --- Streamlit UI Configuration ---

@@ -1,6 +1,9 @@
 import fitz
 import re
 
+def say_hi():
+    print("hi")
+
 # load pdf
 def load_pdf(file_path):
     content = []
